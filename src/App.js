@@ -1,14 +1,21 @@
 import './App.css';
 import { list } from './List.js';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 
 export const App  = () => {
  	const stories = list;
-	const [value, setValue] = useState('');
 
- 	const onHandleInput  = (event)  =>
+	const [value, setValue] = useState(localStorage.getItem('search')||'react');
+
+	useEffect(()=>{
+		localStorage.setItem('search', value);
+	}, [value]);
+
+ 	const onHandleInput  = (event)  => {
 		setValue(event.target.value);
-
+		localStorage.setItem('search', event.target.value);
+	}
+		
   	const headline = {
 	title : 'REACT',
 	subtitle : 'a small interface'
@@ -35,13 +42,13 @@ const List = ({ list }) =>
 	list.map(item => <Item key={item.objectID} item={item}/>);
 
  const Item = ({ item }) => (
-  <div>
-    <span>
-      <a href={item.url}>{item.title}</a>
+  <div className="listItem">
+    <span className="listItem_">
+      <a  href={item.url}>{item.title}</a>
     </span>
-    <span>{item.author}</span>
-    <span>{item.num_comments}</span>
-    <span>{item.points}</span>
+    <span className="listItem_">{item.author}</span>
+    <span className="listItem_">{item.num_comments}</span>
+    <span className="listItem_">{item.points}</span>
   </div>
 );
 
