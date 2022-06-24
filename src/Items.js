@@ -1,14 +1,4 @@
+import {Item} from './Item.js';
 
-export const List = ({ list }) =>
-	list.map(item => <Item key={item.objectID} item={item}/>);
-
-export const Item = ({ item }) => (
-  <div className="listItem">
-    <span className="listItem_">
-      <a  href={item.url}>{item.title}</a>
-    </span>
-    <span className="listItem_">{item.author}</span>
-    <span className="listItem_">{item.num_comments}</span>
-    <span className="listItem_">{item.points}</span>
-  </div>
-);
+export const List = ({ list, onRemove }) =>
+	list.map(item => <Item key={item.objectID} onRemove={onRemove} item={item}/>);

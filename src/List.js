@@ -40,9 +40,13 @@ export const list = [
       points: 2,
       objectID: 4,
     },
+        {
+      title: 'The Linux Command Line',
+      url: 'https://linuxcommand.org/tlcl.php',
+      author: 'William E. Shotts, Jr.',
+      num_comments: 2,
+      points: 9,
+      objectID: 5,
+    },
   ];
 
-export const headline = {
-	title : 'REACT',
-	subtitle : 'a small interface'
-	};
