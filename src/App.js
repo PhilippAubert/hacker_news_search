@@ -1,25 +1,71 @@
-import logo from './logo.svg';
 import './App.css';
+import { list } from './List.js';
+import {useState} from 'react';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+export const App  = () => {
+ 	const stories = list;
+	const [value, setValue] = useState('');
+
+ 	const onHandleInput  = (event)  =>
+		setValue(event.target.value);
+
+  	const headline = {
+	title : 'REACT',
+	subtitle : 'a small interface'
+	};
+
+const searchedStories = stories.filter((story) => {
+		return story.title.toLowerCase().includes(value.toLowerCase());
+	}); 
+
+	return (
+	<div className="App">
+		<Headline text={headline} searchTerm={value}/>
+		<Searchbar isFocused search={value} id="search" handleInput={onHandleInput}>
+			<Label title="TYPE SOMETHING"/>
+		</Searchbar>
+		<div className="list" >
+			<List list={searchedStories}/>
+		</div>
     </div>
   );
 }
 
-export default App;
+const List = ({ list }) =>
+	list.map(item => <Item key={item.objectID} item={item}/>);
+
+ const Item = ({ item }) => (
+  <div>
+    <span>
+      <a href={item.url}>{item.title}</a>
+    </span>
+    <span>{item.author}</span>
+    <span>{item.num_comments}</span>
+    <span>{item.points}</span>
+  </div>
+);
+
+
+
+const Label = ({title}) => (<strong>{title}</strong>)
+
+const Searchbar = ({ handleInput, search, id, children, type="text"}) => 
+{
+ 
+	return (
+		<>
+			<label htmlFor={id}>{children}</label>
+	    	<input id={id} type={type} value={search} onChange={handleInput}/>
+		</>
+	)
+}
+
+const Headline = ({ text }) =>
+(
+	<>
+		<h1>{text.title}</h1>
+		<h2>{text.subtitle}</h2>
+	</>
+)
+	
+
