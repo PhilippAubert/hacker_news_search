@@ -42,3 +42,7 @@ export const list = [
     },
   ];
 
+export const headline = {
+	title : 'REACT',
+	subtitle : 'a small interface'
+	};
