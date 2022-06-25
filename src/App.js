@@ -29,10 +29,30 @@ const storiesReducer = (state, action) =>
 {
 	switch (action.type) 
 	{
-		case 'SET_STORIES': 
-			return action.payload;
+		case 'STORIES_FETCH_INIT': 
+			return {
+				...state,
+				isLoading: true, 
+				isError: false
+			}
+		case 'STORIES_FETCH_SUCCESS': 
+			return {
+				...state,
+				isLoading: false,
+				isError: false, 
+				data: action.payload
+			}
+		case 'STORIES_FETCH_FAILURE': 
+			return {
+				...state,
+				isLoading:false, 
+				isError: true
+			}
 		case 'REMOVE_STORIES':
-			return state.filter(story => action.payload.objectID !== story.objectID);
+			return {
+				...state, 
+				data : state.filter(story => action.payload.objectID !== story.objectID)
+			}
 		default: 
 			throw new Error();
 	}
@@ -44,25 +64,22 @@ export const App  = () => {
 
 	const [stories, dispatchStories] = useReducer(
 		storiesReducer, 
-		[]
+		{data : [], isLoading: false, isError: false}
 	);
 
-	const [isLoading, setIsLoading] = useState(false);
 
-	const [isError, setIsError] = useState(false);
-
-	useEffect (() => {
-		setIsLoading(true);
-		getAsyncStories().then(result => {dispatchStories({type: 'SET_STORIES', payload: result.stories});
-		setIsLoading(false)}).catch(() => setIsError(true));
-	}, [])
+  	useEffect(() => {
+    	dispatchStories({ type: 'STORIES_FETCH_INIT' });
+    	getAsyncStories().then(result => {dispatchStories({type: 'STORIES_FETCH_SUCCESS', payload: result.data.stories,})})
+		.catch(() => dispatchStories({ type: 'STORIES_FETCH_FAILURE' }));
+  	}, []);
 
 	const handleRemoveStories = (item) => 
 		dispatchStories({type: 'REMOVE_STORIES', payload: item});
 	
 	const onHandleInput  = (event)  => setValue(event.target.value);
 
-	const searchedStories = stories.filter((story) => story.title.toLowerCase().includes(value.toLowerCase()));
+	const searchedStories = stories.data.filter((story) => story.title.toLowerCase().includes(value.toLowerCase()));
 
 	return (
 	<div className="App">
@@ -71,8 +88,8 @@ export const App  = () => {
 			<Label title="type something"/>
 		</Searchbar>
 		<div className="list" >
-			{isError && <p>Something went wrong</p>}
-			{isLoading ? (<p>Loading...</p>) : (<List onRemove={handleRemoveStories} list={searchedStories}/>)}
+			{stories.isError && <p>Something went wrong</p>}
+			{stories.isLoading ? (<p>Loading...</p>) : (<List onRemove={handleRemoveStories} list={searchedStories}/>)}
 		</div>
     </div>
 	);
