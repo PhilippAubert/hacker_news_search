@@ -17,14 +17,9 @@ const useSemiPersistentState = (key, initialValue) =>
 	return ([value, setValue])
 }
 
-const getAsyncStories = () =>  
-	new Promise((resolve, reject) => setTimeout(reject, 2000))/* resolve => 
-		setTimeout(
-			() => resolve({ stories: list }), 
-			1500
-	) */
-
-
+const getAsyncStories = () =>
+  new Promise(resolve => setTimeout(() => resolve({ data: { stories: list } }), 2000));
+ 
 const storiesReducer = (state, action) => 
 {
 	switch (action.type) 
@@ -51,7 +46,7 @@ const storiesReducer = (state, action) =>
 		case 'REMOVE_STORIES':
 			return {
 				...state, 
-				data : state.filter(story => action.payload.objectID !== story.objectID)
+				data : state.data.filter(story => action.payload.objectID !== story.objectID)
 			}
 		default: 
 			throw new Error();
@@ -62,15 +57,11 @@ export const App  = () => {
 
 	const [value, setValue] = useSemiPersistentState('search', '');
 
-	const [stories, dispatchStories] = useReducer(
-		storiesReducer, 
-		{data : [], isLoading: false, isError: false}
-	);
+	const [stories, dispatchStories] = useReducer(storiesReducer, {data : [], isLoading: false, isError: false});
 
-
-  	useEffect(() => {
-    	dispatchStories({ type: 'STORIES_FETCH_INIT' });
-    	getAsyncStories().then(result => {dispatchStories({type: 'STORIES_FETCH_SUCCESS', payload: result.data.stories,})})
+	useEffect(() => {
+		dispatchStories({ type: 'STORIES_FETCH_INIT' });
+		getAsyncStories().then(result => {dispatchStories({type: 'STORIES_FETCH_SUCCESS', payload: result.data.stories,})})
 		.catch(() => dispatchStories({ type: 'STORIES_FETCH_FAILURE' }));
   	}, []);
 
