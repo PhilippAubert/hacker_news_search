@@ -57,15 +57,14 @@ export const App  = () => {
 
 	const [stories, dispatchStories] = useReducer(storiesReducer, {data : [], isLoading: false, isError: false});
 
+	const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`);
 	
 	const handleFetchStories = useCallback(() => {
-	if (!searchTerm)
-			return;
 		dispatchStories({ type: 'STORIES_FETCH_INIT' });
-		fetch(`${API_ENDPOINT}${searchTerm}`).then(response => response.json())
+		fetch(url).then(response => response.json())
 		.then(result => {dispatchStories({type: 'STORIES_FETCH_SUCCESS', payload: result.hits})})
 		.catch(() => dispatchStories({ type: 'STORIES_FETCH_FAILURE' }));
-	},[searchTerm] )
+	}, [url])
 
 	useEffect(() => {
 		handleFetchStories();
@@ -74,13 +73,15 @@ export const App  = () => {
 	const handleRemoveStories = (item) => 
 		dispatchStories({type: 'REMOVE_STORIES', payload: item});
 
-	const onHandleInput  = (event)  => setSearchTerm(event.target.value);
+	const handleSearchInput  = (event)  => setSearchTerm(event.target.value);
+
+	const handleSearchSubmit = () => setUrl(`${API_ENDPOINT}${searchTerm}`);
 
 	return (
 	<div className="App">
-		<Headline title="HACKER NEWS" subtitle="search the database" searchTerm={searchTerm}/>
-		<Searchbar isFocused value={searchTerm} id="search" handleInput={onHandleInput}>
-			<Label title="search for topic:"/>
+		<Headline title="HACKER NEWS" subtitle="search the database" />
+		<Searchbar isFocused disabled={!searchTerm} onHandleSearchSubmit={handleSearchSubmit} value={searchTerm} onInputChange={handleSearchInput} id="search" >
+			<Label title="search for topic:"/>			
 		</Searchbar>
 		<div className="list" >
 			{stories.isError && <p>Something went wrong</p>}
