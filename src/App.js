@@ -1,12 +1,11 @@
 import './App.css';
 import { List } from './Items.js';
-import { Label } from './Label.js';
-import { Searchbar } from './Searchbar.js';
+import { SearchForm } from './SearchTerm';
 import { Headline } from './Headline.js';
 import { useState, useEffect, useReducer, useCallback } from 'react';
 import axios from 'axios';
 
-const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query';
+const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
 const useSemiPersistentState = (key, initialValue) =>
 {
@@ -84,14 +83,15 @@ export const App  = () => {
 
 	const handleSearchInput  = (event)  => setSearchTerm(event.target.value);
 
-	const handleSearchSubmit = () => setUrl(`${API_ENDPOINT}${searchTerm}`);
+	const handleSearchSubmit = (event) => {
+		setUrl(`${API_ENDPOINT}${searchTerm}`);
+		event.preventDefault();
+	}
 
 	return (
 	<div className="App">
 		<Headline title="HACKER NEWS" subtitle="search the database" />
-		<Searchbar isFocused disabled={!searchTerm} onHandleSearchSubmit={handleSearchSubmit} value={searchTerm} onInputChange={handleSearchInput} id="search" >
-			<Label title="search for topic:"/>			
-		</Searchbar>
+		<SearchForm searchTerm={searchTerm} onSearchInput={handleSearchInput} onSearchSubmit={handleSearchSubmit} />
 		<div className="list" >
 			{stories.isError && <p>Something went wrong</p>}
 			{stories.isLoading ? (<p>Loading...</p>) : (<List onRemove={handleRemoveStories} list={stories.data}/>)}

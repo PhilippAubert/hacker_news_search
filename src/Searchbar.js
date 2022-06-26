@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-export const Searchbar = ({ onInputChange, value, onHandleSearchSubmit, disabled, id, children, isFocused, type="text"}) => 
+export const Searchbar = ({ onInputChange, value,disabled, id, children, isFocused, typeButton, typeForm}) => 
 { 
 	const inputRef = useRef();
 
@@ -12,8 +12,8 @@ export const Searchbar = ({ onInputChange, value, onHandleSearchSubmit, disabled
 	return (
 		<>
 			<label htmlFor={id}>{children}</label>
-			<input id={id} ref={inputRef} type={type} value={value} autoFocus={isFocused} onChange={onInputChange}/>
-			<button disabled={disabled} onClick={onHandleSearchSubmit}>Submit!</button>
+			<input id={id} ref={inputRef} type={typeForm} value={value} autoFocus={isFocused} onChange={onInputChange}/>
+			<button disabled={disabled} type={typeButton}>Submit!</button>
 		</>
 	)
 }
