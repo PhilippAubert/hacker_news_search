@@ -3,7 +3,7 @@ import { List } from './Items.js';
 import { Label } from './Label.js';
 import { Searchbar } from './Searchbar.js';
 import { Headline } from './Headline.js';
-import { useState, useEffect, useReducer } from 'react';
+import { useState, useEffect, useReducer, useCallback } from 'react';
 
 const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
@@ -57,26 +57,30 @@ export const App  = () => {
 
 	const [stories, dispatchStories] = useReducer(storiesReducer, {data : [], isLoading: false, isError: false});
 
-	useEffect(() => {
-		if (!searchTerm)
+	
+	const handleFetchStories = useCallback(() => {
+	if (!searchTerm)
 			return;
 		dispatchStories({ type: 'STORIES_FETCH_INIT' });
 		fetch(`${API_ENDPOINT}${searchTerm}`).then(response => response.json())
 		.then(result => {dispatchStories({type: 'STORIES_FETCH_SUCCESS', payload: result.hits})})
 		.catch(() => dispatchStories({ type: 'STORIES_FETCH_FAILURE' }));
-  	}, [searchTerm]);
+	},[searchTerm] )
+
+	useEffect(() => {
+		handleFetchStories();
+  	}, [handleFetchStories]);
 
 	const handleRemoveStories = (item) => 
 		dispatchStories({type: 'REMOVE_STORIES', payload: item});
 
 	const onHandleInput  = (event)  => setSearchTerm(event.target.value);
 
-
 	return (
 	<div className="App">
-		<Headline title="React" subtitle="a quick app" searchTerm={searchTerm}/>
+		<Headline title="HACKER NEWS" subtitle="search the database" searchTerm={searchTerm}/>
 		<Searchbar isFocused value={searchTerm} id="search" handleInput={onHandleInput}>
-			<Label title="type something"/>
+			<Label title="search for topic:"/>
 		</Searchbar>
 		<div className="list" >
 			{stories.isError && <p>Something went wrong</p>}
