@@ -31,13 +31,12 @@ button {
   text-align:left;
   font-size: 1.7rem;
   width:90vw;
-  height:67vh;
 }
 
 .listItem
 {
   display:flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   margin:2rem;
 }
 

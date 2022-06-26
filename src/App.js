@@ -1,10 +1,11 @@
 import './App.css';
-import { list } from './List.js';
 import { List } from './Items.js';
 import { Label } from './Label.js';
 import { Searchbar } from './Searchbar.js';
 import { Headline } from './Headline.js';
 import { useState, useEffect, useReducer } from 'react';
+
+const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
 const useSemiPersistentState = (key, initialValue) =>
 {
@@ -16,9 +17,6 @@ const useSemiPersistentState = (key, initialValue) =>
 
 	return ([value, setValue])
 }
-
-const getAsyncStories = () =>
-  new Promise(resolve => setTimeout(() => resolve({ data: { stories: list } }), 2000));
  
 const storiesReducer = (state, action) => 
 {
@@ -55,32 +53,34 @@ const storiesReducer = (state, action) =>
 
 export const App  = () => {
 
-	const [value, setValue] = useSemiPersistentState('search', '');
+	const [searchTerm, setSearchTerm] = useSemiPersistentState('search', '');
 
 	const [stories, dispatchStories] = useReducer(storiesReducer, {data : [], isLoading: false, isError: false});
 
 	useEffect(() => {
+		if (!searchTerm)
+			return;
 		dispatchStories({ type: 'STORIES_FETCH_INIT' });
-		getAsyncStories().then(result => {dispatchStories({type: 'STORIES_FETCH_SUCCESS', payload: result.data.stories,})})
+		fetch(`${API_ENDPOINT}${searchTerm}`).then(response => response.json())
+		.then(result => {dispatchStories({type: 'STORIES_FETCH_SUCCESS', payload: result.hits})})
 		.catch(() => dispatchStories({ type: 'STORIES_FETCH_FAILURE' }));
-  	}, []);
+  	}, [searchTerm]);
 
 	const handleRemoveStories = (item) => 
 		dispatchStories({type: 'REMOVE_STORIES', payload: item});
-	
-	const onHandleInput  = (event)  => setValue(event.target.value);
 
-	const searchedStories = stories.data.filter((story) => story.title.toLowerCase().includes(value.toLowerCase()));
+	const onHandleInput  = (event)  => setSearchTerm(event.target.value);
+
 
 	return (
 	<div className="App">
-		<Headline title="React" subtitle="a quick app" searchTerm={value}/>
-		<Searchbar isFocused search={value} id="search" handleInput={onHandleInput}>
+		<Headline title="React" subtitle="a quick app" searchTerm={searchTerm}/>
+		<Searchbar isFocused value={searchTerm} id="search" handleInput={onHandleInput}>
 			<Label title="type something"/>
 		</Searchbar>
 		<div className="list" >
 			{stories.isError && <p>Something went wrong</p>}
-			{stories.isLoading ? (<p>Loading...</p>) : (<List onRemove={handleRemoveStories} list={searchedStories}/>)}
+			{stories.isLoading ? (<p>Loading...</p>) : (<List onRemove={handleRemoveStories} list={stories.data}/>)}
 		</div>
     </div>
 	);
