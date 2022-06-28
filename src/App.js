@@ -2,7 +2,7 @@ import './App.css';
 import { List } from './Items.js';
 import { SearchForm } from './SearchTerm';
 import { Headline } from './Headline.js';
-import { useState, useEffect, useRef, useReducer, useCallback } from 'react';
+import { useState, useEffect, useRef, useReducer, useMemo, useCallback } from 'react';
 import axios from 'axios';
 
 const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
@@ -56,7 +56,12 @@ const storiesReducer = (state, action) =>
 		default: 
 			throw new Error();
 	}
-}		
+}
+
+const getSumComments = (stories) => {
+	console.log('C');
+	return stories.data.reduce((result, value) => result + value.num_comments, 0);
+}
 
 export const App  = () => {
 
@@ -95,11 +100,14 @@ export const App  = () => {
 		event.preventDefault();
 	}
 
+	const sumComments = useMemo (() => getSumComments(stories), [stories]);
+	console.log(sumComments);
+
 	console.log('B: App');
 
 	return (
 	<div className="App">
-		<Headline title="HACKER NEWS" subtitle="search the database" />
+		<Headline title="HACKER NEWS" subtitle={`with ${sumComments} comments`} />
 		<SearchForm searchTerm={searchTerm} onSearchInput={handleSearchInput} onSearchSubmit={handleSearchSubmit} />
 		<div className="list" >
 			{stories.isError && <p>Something went wrong</p>}
