@@ -13,7 +13,7 @@ export const Searchbar = ({ onInputChange, value,disabled, id, children, isFocus
 		<>
 			<label htmlFor={id}>{children}</label>
 			<input id={id} ref={inputRef} type={typeForm} value={value} autoFocus={isFocused} onChange={onInputChange}/>
-			<button disabled={disabled} type={typeButton}>Submit!</button>
+			<button className="button" disabled={disabled} type={typeButton}>Submit!</button>
 		</>
 	)
 }
