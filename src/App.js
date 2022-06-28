@@ -2,22 +2,29 @@ import './App.css';
 import { List } from './Items.js';
 import { SearchForm } from './SearchTerm';
 import { Headline } from './Headline.js';
-import { useState, useEffect, useReducer, useCallback } from 'react';
+import { useState, useEffect, useRef, useReducer, useCallback } from 'react';
 import axios from 'axios';
 
 const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
 const useSemiPersistentState = (key, initialValue) =>
 {
+	const isMounted = useRef(false);
+
 	const [value, setValue] = useState(localStorage.getItem('search')||initialValue);
 
 	useEffect(() => {
-		localStorage.setItem('search', value);
+		if (!isMounted.current)
+			isMounted.current = true;
+		else {
+			console.log('A');
+			localStorage.setItem('search', value);
+		}
 	}, [value]);
 
 	return ([value, setValue])
 }
- 
+
 const storiesReducer = (state, action) => 
 {
 	switch (action.type) 
@@ -87,6 +94,8 @@ export const App  = () => {
 		setUrl(`${API_ENDPOINT}${searchTerm}`);
 		event.preventDefault();
 	}
+
+	console.log('B: App');
 
 	return (
 	<div className="App">
