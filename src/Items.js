@@ -1,4 +1,5 @@
 import { Item } from './Item.js';
+import { SortButton } from './SortButton.js';
 import { useState } from 'react';
 import { sortBy } from 'lodash';
 
@@ -14,31 +15,27 @@ export const List = ({ list, onRemove }) => {
 
 	const [sort, setSort] = useState('NONE');
 
+	const [color, setColor] = useState(false);
+
 	const sortFunction = SORTS[sort];
 
 	const sortedList = sortFunction(list);
 
-	const handleSort = (sortKey) => 
+	const handleSort = (sortKey) =>
 	{
 		setSort(sortKey);
+		setColor(!color);
 	}
+		
 
 	return (
 	<div>
-    <div className="listItem" >
-		<span className="listItem_" style={{ width: '40%' }}>
-			<button className="button" onClick={() => handleSort('TITLE')}>Title</button>
-		</span>
-		<span className="listItem_" style={{ width: '30%' }}>
-			<button className="button" onClick={() => handleSort('AUTHOR')}>Author</button>
-		</span>
-		<span className="listItem_" style={{ width: '10%' }}>
-			<button className="button" onClick={() => handleSort('COMMENTS')}>Comments</button>
-		</span>
-		<span className="listItem_" style={{ width: '10%' }}>
-				<button className="button" onClick={() => handleSort('POINTS')}>Points</button>
-		</span>
-		<span >Actions</span>
+    <div className="sort_bar">
+		<h2>Sort by :</h2>
+		<SortButton name="Title" onClick={()=> handleSort('TITLE')} />
+		<SortButton name="Author" onClick={()=> handleSort('AUTHOR')} />
+		<SortButton name="Comments" onClick={()=> handleSort('COMMENTS')}/>
+		<SortButton name="Points" onClick={()=> handleSort('POINTS')} />
     </div>
 		{sortedList.map(item => (<Item key={item.objectID} onRemove={onRemove} item={item}/>))}
 	</div>);
