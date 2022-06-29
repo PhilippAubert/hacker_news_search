@@ -15,7 +15,7 @@ export const List = ({ list, onRemove }) => {
 
 	const [sort, setSort] = useState('NONE');
 
-	const [color, setColor] = useState(false);
+	const [reverse, setReverse] = useState(false);
 
 	const sortFunction = SORTS[sort];
 
@@ -24,7 +24,7 @@ export const List = ({ list, onRemove }) => {
 	const handleSort = (sortKey) =>
 	{
 		setSort(sortKey);
-		setColor(!color);
+		setReverse(!reverse);
 	}
 		
 
